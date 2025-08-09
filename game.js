@@ -1,11 +1,11 @@
 // game.js - plain JS version (paste as-is)
-const canvas = document.getElementById('pong');
-const ctx = canvas.getContext('2d');
-const startBtn = document.getElementById('startBtn');
-const pauseBtn = document.getElementById('pauseBtn');
-const restartBtn = document.getElementById('restartBtn');
-const scoreEl = document.getElementById('score');
-const scoreAIEl = document.getElementById('scoreAI');
+const canvas = document.getElementById("pong");
+const ctx = canvas.getContext("2d");
+const startBtn = document.getElementById("startBtn");
+const pauseBtn = document.getElementById("pauseBtn");
+const restartBtn = document.getElementById("restartBtn");
+const scoreEl = document.getElementById("score");
+const scoreAIEl = document.getElementById("scoreAI");
 
 function resizeCanvasForDisplaySize(canvasEl) {
   const dpr = Math.max(1, window.devicePixelRatio || 1);
@@ -19,7 +19,7 @@ function resizeCanvasForDisplaySize(canvasEl) {
   }
 }
 resizeCanvasForDisplaySize(canvas);
-window.addEventListener('resize', () => resizeCanvasForDisplaySize(canvas));
+window.addEventListener("resize", () => resizeCanvasForDisplaySize(canvas));
 
 const LOGICAL_WIDTH = 800;
 const LOGICAL_HEIGHT = 440;
@@ -33,7 +33,7 @@ const player = {
   y: LOGICAL_HEIGHT / 2 - PADDLE_H / 2,
   width: PADDLE_W,
   height: PADDLE_H,
-  speed: 8
+  speed: 8,
 };
 
 const ai = {
@@ -41,7 +41,7 @@ const ai = {
   y: LOGICAL_HEIGHT / 2 - PADDLE_H / 2,
   width: PADDLE_W,
   height: PADDLE_H,
-  speed: 5
+  speed: 5,
 };
 
 const ball = {
@@ -50,7 +50,7 @@ const ball = {
   radius: BALL_R,
   vx: 5 * (Math.random() > 0.5 ? 1 : -1),
   vy: 3 * (Math.random() > 0.5 ? 1 : -1),
-  speed: 6
+  speed: 6,
 };
 
 let playerScore = 0;
@@ -63,12 +63,12 @@ function clamp(v, a, b) {
 }
 
 function clear() {
-  ctx.fillStyle = '#0b0d0f';
+  ctx.fillStyle = "#0b0d0f";
   ctx.fillRect(0, 0, LOGICAL_WIDTH, LOGICAL_HEIGHT);
 }
 
 function drawNet() {
-  ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+  ctx.strokeStyle = "rgba(255,255,255,0.06)";
   ctx.lineWidth = 2;
   ctx.beginPath();
   const gap = 14;
@@ -92,31 +92,50 @@ function drawRoundedRect(x, y, w, h, r) {
 
 function draw() {
   clear();
-  const grd = ctx.createRadialGradient(LOGICAL_WIDTH / 2, LOGICAL_HEIGHT / 2, 10, LOGICAL_WIDTH / 2, LOGICAL_HEIGHT / 2, 400);
-  grd.addColorStop(0, 'rgba(0,212,255,0.03)');
-  grd.addColorStop(1, 'rgba(0,0,0,0)');
+  const grd = ctx.createRadialGradient(
+    LOGICAL_WIDTH / 2,
+    LOGICAL_HEIGHT / 2,
+    10,
+    LOGICAL_WIDTH / 2,
+    LOGICAL_HEIGHT / 2,
+    400
+  );
+  grd.addColorStop(0, "rgba(0,212,255,0.03)");
+  grd.addColorStop(1, "rgba(0,0,0,0)");
   ctx.fillStyle = grd;
   ctx.fillRect(0, 0, LOGICAL_WIDTH, LOGICAL_HEIGHT);
   drawNet();
-  ctx.fillStyle = '#fff';
-  ctx.shadowColor = 'rgba(0,0,0,0.6)';
+  ctx.fillStyle = "#fff";
+  ctx.shadowColor = "rgba(0,0,0,0.6)";
   ctx.shadowBlur = 6;
   drawRoundedRect(player.x, player.y, player.width, player.height, 8);
   drawRoundedRect(ai.x, ai.y, ai.width, ai.height, 8);
   ctx.shadowBlur = 0;
   ctx.beginPath();
-  ctx.fillStyle = '#00d4ff';
+  ctx.fillStyle = "#00d4ff";
   ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
   ctx.fill();
-  ctx.font = 'bold 36px Poppins, Arial';
-  ctx.fillStyle = '#00d4ff';
-  ctx.textAlign = 'center';
+  ctx.font = "bold 36px Poppins, Arial";
+  ctx.fillStyle = "#00d4ff";
+  ctx.textAlign = "center";
   ctx.fillText(String(playerScore), LOGICAL_WIDTH / 4, 50);
   ctx.fillText(String(aiScore), (LOGICAL_WIDTH / 4) * 3, 50);
+  drawScoresInCanvas();
+}
+
+function drawScoresInCanvas() {
+  if (window.innerWidth > 640) {
+    // same breakpoint as your CSS
+    ctx.font = "bold 36px Poppins, Arial";
+    ctx.fillStyle = "#00d4ff";
+    ctx.textAlign = "center";
+    ctx.fillText(String(playerScore), LOGICAL_WIDTH / 4, 50);
+    ctx.fillText(String(aiScore), (LOGICAL_WIDTH / 4) * 3, 50);
+  }
 }
 
 function intersectRect(px, py, pw, ph, bx, by, br) {
-  return (bx - br < px + pw && bx + br > px && by - br < py + ph && by + br > py);
+  return bx - br < px + pw && bx + br > px && by - br < py + ph && by + br > py;
 }
 
 function handlePaddleCollision(p) {
@@ -138,10 +157,10 @@ function handlePaddleCollision(p) {
   }
 }
 
-function resetBall(direction = (Math.random() > 0.5 ? 1 : -1)) {
+function resetBall(direction = Math.random() > 0.5 ? 1 : -1) {
   ball.x = LOGICAL_WIDTH / 2;
   ball.y = LOGICAL_HEIGHT / 2;
-  const angle = (Math.random() * Math.PI / 4) - (Math.PI / 8);
+  const angle = (Math.random() * Math.PI) / 4 - Math.PI / 8;
   ball.vx = direction * Math.cos(angle) * 6;
   ball.vy = Math.sin(angle) * 6;
 }
@@ -208,35 +227,39 @@ function movePlayerTo(y) {
   player.y = clamp(y - player.height / 2, 0, LOGICAL_HEIGHT - player.height);
 }
 
-canvas.addEventListener('mousemove', (e) => {
+canvas.addEventListener("mousemove", (e) => {
   const rect = canvas.getBoundingClientRect();
-  const cssY = (e.clientY - rect.top) / (rect.height) * LOGICAL_HEIGHT;
+  const cssY = ((e.clientY - rect.top) / rect.height) * LOGICAL_HEIGHT;
   movePlayerTo(cssY);
 });
 
-canvas.addEventListener('touchmove', (e) => {
-  e.preventDefault();
-  const rect = canvas.getBoundingClientRect();
-  const touch = e.touches[0];
-  const cssY = (touch.clientY - rect.top) / (rect.height) * LOGICAL_HEIGHT;
-  movePlayerTo(cssY);
-}, { passive: false });
+canvas.addEventListener(
+  "touchmove",
+  (e) => {
+    e.preventDefault();
+    const rect = canvas.getBoundingClientRect();
+    const touch = e.touches[0];
+    const cssY = ((touch.clientY - rect.top) / rect.height) * LOGICAL_HEIGHT;
+    movePlayerTo(cssY);
+  },
+  { passive: false }
+);
 
 const keys = new Set();
-window.addEventListener('keydown', (e) => {
+window.addEventListener("keydown", (e) => {
   keys.add(e.key);
-  if (e.key === ' ' && !running) {
+  if (e.key === " " && !running) {
     startGame();
   }
 });
-window.addEventListener('keyup', (e) => {
+window.addEventListener("keyup", (e) => {
   keys.delete(e.key);
 });
 
 function handleKeyboard() {
-  if (keys.has('w') || keys.has('W') || keys.has('ArrowUp')) {
+  if (keys.has("w") || keys.has("W") || keys.has("ArrowUp")) {
     player.y -= player.speed;
-  } else if (keys.has('s') || keys.has('S') || keys.has('ArrowDown')) {
+  } else if (keys.has("s") || keys.has("S") || keys.has("ArrowDown")) {
     player.y += player.speed;
   }
   player.y = clamp(player.y, 0, LOGICAL_HEIGHT - player.height);
@@ -255,7 +278,7 @@ function playBeep(freq, duration = 0.05) {
   try {
     const o = audioCtx.createOscillator();
     const g = audioCtx.createGain();
-    o.type = 'sine';
+    o.type = "sine";
     o.frequency.value = freq;
     g.gain.value = 0.0001;
     o.connect(g);
@@ -269,13 +292,13 @@ function playBeep(freq, duration = 0.05) {
   } catch (err) {}
 }
 
-startBtn.addEventListener('click', () => {
+startBtn.addEventListener("click", () => {
   startGame();
 });
-pauseBtn.addEventListener('click', () => {
+pauseBtn.addEventListener("click", () => {
   togglePause();
 });
-restartBtn.addEventListener('click', () => {
+restartBtn.addEventListener("click", () => {
   restartGame();
 });
 
@@ -287,7 +310,7 @@ function startGame() {
   } else {
     paused = false;
   }
-  if (audioCtx.state === 'suspended') {
+  if (audioCtx.state === "suspended") {
     audioCtx.resume();
   }
 }
@@ -303,7 +326,7 @@ function restartGame() {
   playerScore = 0;
   aiScore = 0;
   updateScoreUI();
-  resetBall((Math.random() > 0.5) ? 1 : -1);
+  resetBall(Math.random() > 0.5 ? 1 : -1);
 }
 
 resetBall();

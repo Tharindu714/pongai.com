@@ -85,5 +85,5 @@ canvas{
 /* responsive */
 @media (max-width:640px){
   .score{ font-size: 28px; }
-  canvas { height: 360px; }
+  canvas { height: auto; }
 }
